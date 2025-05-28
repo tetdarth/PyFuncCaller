@@ -2,8 +2,9 @@
 #ifndef PY_INITIALIZER_H
 #define PY_INITIALIZER_H
 
+#include <windows.h>
 #include <Python.h>
-#include <String>
+#include <filesystem>
 
 class PyInitializer {
 public:
@@ -26,8 +27,19 @@ public:
 
     // Moduleのパスを追加する
     void addModulePath(const std::string& path) {
+        if (!std::filesystem::exists(path)) {
+            throw std::runtime_error("Module path does not exist: " + path);
+        }
         std::string code = "import sys; sys.path.append('" + path + "')";
         PyRun_SimpleString(code.c_str());
+    }
+
+    // Pythonのpython3x.dllとzlib.dllを取得するためのパス
+    void addPythonPath(const std::string& path) {
+        if (!std::filesystem::exists(path)) {
+            throw std::runtime_error("Module path does not exist: " + path);
+        }
+        SetDllDirectoryA(path.c_str());
     }
 };
 

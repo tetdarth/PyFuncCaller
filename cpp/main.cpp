@@ -1,6 +1,7 @@
 #include "PyFuncCaller.h"
 #include <iostream>
 #include <random>
+#include <tuple>
 
 // 2次元ベクタを乱数で初期化
 std::vector<std::vector<double>> random_matrix(size_t rows, size_t cols, double min = 0.0, double max = 1.0) {
@@ -18,7 +19,8 @@ int main() {
     printf("starting C++ application...");
     try {
         PyInitializer pyInit; // Pythonインタプリタを初期化
-        pyInit.addModulePath("../python/"); // module(~.py)があるディレクトリを指定
+        pyInit.addModulePath("../python"); // module(~.py)があるディレクトリを指定
+        pyInit.addPythonPath("C:/Miniconda3");  // pythonのインストールディレクトリ
 
         PyFuncCaller greeter("my_module", "greet");
         int length = greeter.call<int>("World", 3); // 戻り値: int, 引数: const char*, int
@@ -48,11 +50,11 @@ int main() {
         };
         PyFuncCaller dot("my_module", "dot_py");
         std::vector<std::vector<int>> result = dot.call<std::vector<std::vector<int>>>(x, y);
-
         for (const auto& i : result) {
             std::cout << "[";
-            for (const auto& j : i) {
-                std::cout << j << ", ";
+            for (size_t j = 0; j < i.size(); ++j) {
+                std::cout << i[j];
+                if (j != i.size()-1) std::cout << ", ";
             }
             std::cout << "]" << std::endl;
         }
@@ -61,9 +63,19 @@ int main() {
         PyFuncCaller inv_mat("my_module", "inverse_matrix");
         inv_mat.call<void>(random_matrix(1000, 1000));
 
-        int tmp;
-        std::cin >> tmp;
+        
+        //複数戻り値はタプルで取得
+        PyFuncCaller multiple_returns("my_module", "multiple_returns");
+        std::tuple<int, int, std::string> tmp = multiple_returns.call<std::tuple<int, int, std::string>>(3);
+        // unpack
+        int ret1 = std::get<0>(tmp);
+        int ret2 = std::get<1>(tmp);
+        std::string str = std::get<2>(tmp);
+        std::cout << ret1 << "," << ret2 << "," << str << std::endl;
 
+        // 終了待ち
+        int t;
+        std::cin >> t;
 
     } catch (const std::exception& e) {
         std::cerr << "C++ Exception: " << e.what() << std::endl;
