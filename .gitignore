@@ -1,14 +1,10 @@
 # C++ファイルを除外
-*.cpp
 *.cxx
 *.cc
-cpp/
 
 # Pythonファイルを除外
-*.py
 *.pyc
 __pycache__/
-python/
 
 # その他よくある除外
 *.o
@@ -22,4 +18,3 @@ build/
 dist/
 .env
 .venv
-.vscode/
