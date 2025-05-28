@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <filesystem>
 
-namespace PFC {
+namespace pfc {
 
 // Python関数を呼び出すためのクラス
 class PyFuncCaller {

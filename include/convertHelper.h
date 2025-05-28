@@ -11,7 +11,7 @@
 #include <climits>
 #include <type_traits>
 
-namespace PFC {
+namespace pfc {
 
 // --- is_vector型トレイト ---
 template<typename T>
@@ -47,6 +47,11 @@ Tuple tupleFromPyTupleImpl(PyObject* obj, std::index_sequence<I...>) {
 // --- C++ to PyObject* ---
 template<typename T>
 PyObject* convertToPyObject(T value); // ベーステンプレート
+
+template<>
+PyObject* convertToPyObject<bool>(bool value) {
+    return PyBool_FromLong(value ? 1 : 0);
+}
 
 template<>
 PyObject* convertToPyObject<long>(long value) {
@@ -95,13 +100,21 @@ PyObject* convertToPyObject(const std::vector<T>& vec) {
 // メインテンプレート
 template<typename T>
 T convertFromPyObject(PyObject* obj) {
-    if constexpr (std::is_same_v<T, int>) {
+    if constexpr (std::is_same_v<T, bool>) {
+        if(!PyBool_Check(obj)) {
+            if (PyErr_Occurred()) PyErr_Print();
+            throw std::runtime_error("Cannot convert Python object to bool.");
+        }
+        return obj == Py_True;
+    } 
+    else if constexpr (std::is_same_v<T, int>) {
         long val = convertFromPyObject<long>(obj);
         if (val > INT_MAX || val < INT_MIN) {
             throw std::overflow_error("Python long value out of C++ int range.");
         }
         return static_cast<int>(val);
-    } else if constexpr (std::is_same_v<T, long>) {
+    } 
+    else if constexpr (std::is_same_v<T, long>) {
         if (!obj || !PyLong_Check(obj)) {
             if (PyErr_Occurred()) PyErr_Print();
             throw std::runtime_error("Cannot convert Python object to long.");
@@ -112,7 +125,8 @@ T convertFromPyObject(PyObject* obj) {
             throw std::runtime_error("Error converting Python long to C++ long (overflow or type error).");
         }
         return val;
-    } else if constexpr (std::is_same_v<T, double>) {
+    } 
+    else if constexpr (std::is_same_v<T, double>) {
         if (!obj || !PyFloat_Check(obj)) {
             if (!PyLong_Check(obj)) {
                 if (PyErr_Occurred()) PyErr_Print();
@@ -125,7 +139,8 @@ T convertFromPyObject(PyObject* obj) {
             throw std::runtime_error("Error converting Python float/long to C++ double.");
         }
         return val;
-    } else if constexpr (std::is_same_v<T, std::string>) {
+    } 
+    else if constexpr (std::is_same_v<T, std::string>) {
         if (!obj) {
             throw std::runtime_error("Cannot convert null Python object to string.");
         }
@@ -155,9 +170,11 @@ T convertFromPyObject(PyObject* obj) {
         std::string result = PyBytes_AsString(utf8_bytes);
         Py_DECREF(utf8_bytes);
         return result;
-    } else if constexpr (std::is_same_v<T, void>) {
+    } 
+    else if constexpr (std::is_same_v<T, void>) {
         return;
-    } else if constexpr (is_vector<T>::value) {
+    } 
+    else if constexpr (is_vector<T>::value) {
         using ElemType = typename T::value_type;
         if (!obj || !PyList_Check(obj)) {
             throw std::runtime_error("Python object is not a list.");
@@ -170,10 +187,12 @@ T convertFromPyObject(PyObject* obj) {
             result.push_back(convertFromPyObject<ElemType>(item));
         }
         return result;
-    } else if constexpr (is_tuple<T>::value) {
+    } 
+    else if constexpr (is_tuple<T>::value) {
         constexpr std::size_t N = std::tuple_size<T>::value;
         return tupleFromPyTupleImpl<T>(obj, std::make_index_sequence<N>{});
-    } else {
+    } 
+    else {
         static_assert(sizeof(T) == 0, "convertFromPyObject: Unsupported type");
     }
 }

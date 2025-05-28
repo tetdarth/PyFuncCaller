@@ -71,6 +71,7 @@ C++のmain関数の先頭で、Pythonインタプリタを初期化してくだ�
 
 int main() {
     PFC::PyInitializer pyInit; // Pythonインタプリタの初期化
+    pyInit.addModuleDir("../python");   // Pythonモジュールのディレクトリを追加
     // ...以降でPython関数を呼び出せます...
 }
 ```
