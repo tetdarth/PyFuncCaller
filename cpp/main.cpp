@@ -19,8 +19,8 @@ int main() {
     printf("starting C++ application...");
     try {
         PyInitializer pyInit; // Pythonインタプリタを初期化
-        pyInit.addModulePath("../python"); // module(~.py)があるディレクトリを指定
-        pyInit.addPythonPath("C:/Miniconda3");  // pythonのインストールディレクトリ
+        pyInit.addModuleDir("../python"); // module(~.py)があるディレクトリを指定
+        pyInit.addPythonDir("C:/Miniconda3");  // pythonのインストールディレクトリ
 
         PyFuncCaller greeter("my_module", "greet");
         int length = greeter.call<int>("World", 3); // 戻り値: int, 引数: const char*, int
@@ -49,7 +49,7 @@ int main() {
             {2, 0, 2}
         };
         PyFuncCaller dot("my_module", "dot_py");
-        std::vector<std::vector<int>> result = dot.call<std::vector<std::vector<int>>>(x, y);
+        auto result = dot.call<std::vector<std::vector<int>>>(x, y);
         for (const auto& i : result) {
             std::cout << "[";
             for (size_t j = 0; j < i.size(); ++j) {
@@ -66,12 +66,12 @@ int main() {
         
         //複数戻り値はタプルで取得
         PyFuncCaller multiple_returns("my_module", "multiple_returns");
-        std::tuple<int, int, std::string> tmp = multiple_returns.call<std::tuple<int, int, std::string>>(3);
+        auto tmp = multiple_returns.call<std::tuple<int, int, std::string>>(3);
         // unpack
         int ret1 = std::get<0>(tmp);
         int ret2 = std::get<1>(tmp);
         std::string str = std::get<2>(tmp);
-        std::cout << ret1 << "," << ret2 << "," << str << std::endl;
+        std::cout << str << ":" << ret1 << ", " << ret2 << ", " << std::endl;
 
         // 終了待ち
         int t;

@@ -1,6 +1,5 @@
 // PyFuncCaller.h
-#ifndef PY_FUNC_CALLER_H
-#define PY_FUNC_CALLER_H
+#pragma once
 
 #include "ConvertHelper.h" // 型変換ヘルパー
 #include "PyInitializer.h" // Pythonインタプリタの初期化ヘルパー
@@ -127,5 +126,3 @@ private:
     PyObject* pModule_;
     PyObject* pFunc_;
 };
-
-#endif // PY_FUNC_CALLER_H

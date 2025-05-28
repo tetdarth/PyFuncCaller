@@ -1,3 +1,6 @@
+// convertHelper.h
+#pragma once
+
 #include <Python.h>
 #include <string>
 #include <vector>
@@ -22,7 +25,7 @@ struct is_tuple : std::false_type {};
 template<typename... Ts>
 struct is_tuple<std::tuple<Ts...>> : std::true_type {};
 
-// メインテンプレートより前に宣言
+// ベーステンプレート
 template<typename T>
 T convertFromPyObject(PyObject* obj);
 
@@ -39,6 +42,7 @@ Tuple tupleFromPyTupleImpl(PyObject* obj, std::index_sequence<I...>) {
     // std::make_tupleで初期化
     return std::make_tuple(convertFromPyObject<std::tuple_element_t<I, Tuple>>(PyTuple_GetItem(obj, I))...);
 }
+
 
 // --- C++ to PyObject* ---
 template<typename T>
@@ -84,6 +88,7 @@ PyObject* convertToPyObject(const std::vector<T>& vec) {
     }
     return pyList;
 }
+
 
 // --- PyObject* to C++ ---
 

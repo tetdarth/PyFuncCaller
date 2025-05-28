@@ -1,6 +1,5 @@
 // PyInitializer.h
-#ifndef PY_INITIALIZER_H
-#define PY_INITIALIZER_H
+#pragma once
 
 #include <windows.h>
 #include <Python.h>
@@ -25,21 +24,21 @@ public:
     PyInitializer(PyInitializer&&) = delete;
     PyInitializer& operator=(PyInitializer&&) = delete;
 
-    // Moduleのパスを追加する
-    void addModulePath(const std::string& path) {
-        if (!std::filesystem::exists(path)) {
-            throw std::runtime_error("Module path does not exist: " + path);
+    // Moduleのディレクトリを追加する
+    void addModuleDir(const std::string& dir) {
+        if (!std::filesystem::exists(dir)) {
+            throw std::runtime_error("Module path does not exist: " + dir);
         }
-        std::string code = "import sys; sys.path.append('" + path + "')";
+        std::string code = "import sys; sys.path.append('" + dir + "')";
         PyRun_SimpleString(code.c_str());
     }
 
-    // Pythonのpython3x.dllとzlib.dllを取得するためのパス
-    void addPythonPath(const std::string& path) {
-        if (!std::filesystem::exists(path)) {
-            throw std::runtime_error("Module path does not exist: " + path);
+    // Pythonのpython3x.dllとzlib.dllを取得するためのディレクトリ
+    void addPythonDir(const std::string& dir) {
+        if (!std::filesystem::exists(dir)) {
+            throw std::runtime_error("Module path does not exist: " + dir);
         }
-        SetDllDirectoryA(path.c_str());
+        SetDllDirectoryA(dir.c_str());
     }
 };
 
@@ -52,5 +51,3 @@ public:
         }
     }
 };
-
-#endif // PY_INITIALIZER_H
