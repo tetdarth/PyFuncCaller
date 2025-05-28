@@ -1,7 +1,5 @@
 # C++ファイルを除外
 *.cpp
-*.h
-*.hpp
 *.cxx
 *.cc
 cpp/
