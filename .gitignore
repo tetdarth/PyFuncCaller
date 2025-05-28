@@ -1,0 +1,27 @@
+# C++ファイルを除外
+*.cpp
+*.h
+*.hpp
+*.cxx
+*.cc
+cpp/
+
+# Pythonファイルを除外
+*.py
+*.pyc
+__pycache__/
+python/
+
+# その他よくある除外
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.pyd
+*.log
+build/
+dist/
+.env
+.venv
+.vscode/
