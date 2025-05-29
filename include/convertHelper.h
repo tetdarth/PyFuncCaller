@@ -124,7 +124,7 @@ T convertFromPyObject(PyObject* obj) {
             PyErr_Print();
             throw std::runtime_error("Error converting Python long to C++ long (overflow or type error).");
         }
-        return val;
+        return static_cast<long>(val);
     } 
     else if constexpr (std::is_same_v<T, double>) {
         if (!obj || !PyFloat_Check(obj)) {
@@ -138,7 +138,7 @@ T convertFromPyObject(PyObject* obj) {
             PyErr_Print();
             throw std::runtime_error("Error converting Python float/long to C++ double.");
         }
-        return val;
+        return static_cast<double>(val);
     } 
     else if constexpr (std::is_same_v<T, std::string>) {
         if (!obj) {
